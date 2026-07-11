@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/* Hospital blue + white theme with dark mode support */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Source Sans 3", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "DM Sans", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+
+  --color-hospital-50: #eff6ff;
+  --color-hospital-100: #dbeafe;
+  --color-hospital-200: #bfdbfe;
+  --color-hospital-300: #93c5fd;
+  --color-hospital-400: #60a5fa;
+  --color-hospital-500: #3b82f6;
+  --color-hospital-600: #2563eb;
+  --color-hospital-700: #1d4ed8;
+  --color-hospital-800: #1e40af;
+  --color-hospital-900: #1e3a8a;
+
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-ink: #0f172a;
+  --color-ink-muted: #64748b;
+  --color-danger: #dc2626;
+  --color-warning: #d97706;
+  --color-success: #059669;
+}
+
+:root {
+  color-scheme: light;
+  --bg: #f1f5f9;
+  --bg-elevated: #ffffff;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --accent: #2563eb;
+  --accent-soft: #dbeafe;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #0b1220;
+  --bg-elevated: #111827;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #1f2937;
+  --accent: #60a5fa;
+  --accent-soft: #1e3a8a;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #root {
+    min-height: 100svh;
+  }
+}
