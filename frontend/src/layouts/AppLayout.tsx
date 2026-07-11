@@ -12,12 +12,13 @@ import {
   ScrollText,
   ShieldAlert,
   Sun,
+  UserCog,
   UserRound,
   Users,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
-import { APP_NAME } from '../utils/constants'
+import { APP_NAME, ROLES } from '../utils/constants'
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -28,8 +29,9 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   ].join(' ')
 
 export function AppLayout() {
-  const { user, logout } = useAuth()
+  const { user, logout, hasRole } = useAuth()
   const { theme, toggleTheme } = useTheme()
+  const isAdmin = hasRole(ROLES.ADMIN)
 
   return (
     <div className="flex min-h-svh bg-[var(--bg)] text-[var(--text)]">
@@ -73,6 +75,12 @@ export function AppLayout() {
             <UserRound className="h-4 w-4" />
             Profile
           </NavLink>
+          {isAdmin ? (
+            <NavLink to="/staff" className={navLinkClass}>
+              <UserCog className="h-4 w-4" />
+              Staff accounts
+            </NavLink>
+          ) : null}
         </nav>
 
         <p className="mt-4 px-2 text-[10px] leading-relaxed text-[var(--text-muted)]">

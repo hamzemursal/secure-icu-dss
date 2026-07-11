@@ -2,7 +2,7 @@
  * Login page — email/password with Zod + React Hook Form.
  */
 import { useState } from 'react'
-import { Navigate, useLocation, useNavigate, Link } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -114,13 +114,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-4 text-center text-sm text-[var(--text-muted)]">
-          New staff?{' '}
-          <Link
-            to="/register"
-            className="font-semibold text-hospital-700 hover:underline dark:text-hospital-300"
-          >
-            Create account
-          </Link>
+          Accounts are issued by an administrator. Contact your hospital admin for access.
         </p>
       </div>
     </div>

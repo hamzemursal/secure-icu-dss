@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 
 from app.config import get_settings
 from app.models import User, UserRole
-from app.schemas.auth import LoginResponse, RegisterRequest, TokenResponse, UserPublic
+from app.schemas.auth import CreateUserRequest, LoginResponse, TokenResponse, UserPublic
 from app.utils.security import create_access_token, hash_password, verify_password
 
 
@@ -24,17 +24,12 @@ def user_to_public(user: User) -> UserPublic:
     )
 
 
-async def register_user(payload: RegisterRequest) -> LoginResponse:
-    """Create a new doctor/nurse account and issue a JWT."""
-    if payload.role == UserRole.ADMIN:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin accounts cannot be self-registered",
-        )
-    if payload.role not in {UserRole.DOCTOR, UserRole.NURSE}:
+async def create_user_by_admin(payload: CreateUserRequest) -> UserPublic:
+    """Provision a staff account — only callable by an authenticated admin."""
+    if payload.role not in {UserRole.ADMIN, UserRole.DOCTOR, UserRole.NURSE}:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Role must be doctor or nurse",
+            detail="Role must be admin, doctor, or nurse",
         )
 
     email = payload.email.lower()
@@ -54,9 +49,13 @@ async def register_user(payload: RegisterRequest) -> LoginResponse:
         is_active=True,
     )
     await user.insert()
+    return user_to_public(user)
 
-    # Auto-login after registration
-    return await authenticate_user(email, payload.password)
+
+async def list_users() -> list[UserPublic]:
+    """Return all staff accounts (admin management)."""
+    users = await User.find_all().sort(-User.created_at).to_list()
+    return [user_to_public(u) for u in users]
 
 
 async def authenticate_user(email: str, password: str) -> LoginResponse:

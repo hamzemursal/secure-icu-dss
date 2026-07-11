@@ -1,5 +1,5 @@
 /**
- * Auth API calls — login, logout, current profile.
+ * Auth API calls — login, logout, profile, admin user provisioning.
  */
 import api, { TOKEN_STORAGE_KEY } from './api'
 import type { UserRole } from '../utils/constants'
@@ -24,6 +24,14 @@ export interface LoginResponse {
   user: UserPublic
 }
 
+export interface CreateUserPayload {
+  email: string
+  password: string
+  full_name: string
+  role: UserRole
+  department?: string
+}
+
 export const USER_STORAGE_KEY = 'icu_dss_user'
 
 export async function loginRequest(
@@ -31,17 +39,6 @@ export async function loginRequest(
   password: string,
 ): Promise<LoginResponse> {
   const { data } = await api.post<LoginResponse>('/auth/login', { email, password })
-  return data
-}
-
-export async function registerRequest(payload: {
-  email: string
-  password: string
-  full_name: string
-  role: 'doctor' | 'nurse'
-  department?: string
-}): Promise<LoginResponse> {
-  const { data } = await api.post<LoginResponse>('/auth/register', payload)
   return data
 }
 
@@ -56,6 +53,18 @@ export async function logoutRequest(): Promise<void> {
 
 export async function fetchMe(): Promise<UserPublic> {
   const { data } = await api.get<UserPublic>('/auth/me')
+  return data
+}
+
+export async function listUsersRequest(): Promise<UserPublic[]> {
+  const { data } = await api.get<UserPublic[]>('/auth/users')
+  return data
+}
+
+export async function createUserRequest(
+  payload: CreateUserPayload,
+): Promise<UserPublic> {
+  const { data } = await api.post<UserPublic>('/auth/users', payload)
   return data
 }
 

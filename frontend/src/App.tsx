@@ -8,8 +8,8 @@ import { ThemeProvider } from './context/ThemeContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { AppLayout } from './layouts/AppLayout'
 import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
+import AdminUsersPage from './pages/AdminUsersPage'
 import ProfilePage from './pages/ProfilePage'
 import PatientsPage from './pages/PatientsPage'
 import PatientFormPage from './pages/PatientFormPage'
@@ -28,7 +28,7 @@ export default function App() {
           <Toaster position="top-right" />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/register" element={<Navigate to="/login" replace />} />
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
@@ -42,6 +42,9 @@ export default function App() {
                 <Route path="/audit-logs" element={<AuditLogsPage />} />
                 <Route path="/evaluation" element={<EvaluationDashboardPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route element={<ProtectedRoute roles={['admin']} />}>
+                  <Route path="/staff" element={<AdminUsersPage />} />
+                </Route>
               </Route>
             </Route>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />

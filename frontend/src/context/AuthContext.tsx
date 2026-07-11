@@ -18,7 +18,6 @@ import {
   logoutRequest,
   persistSession,
   readStoredUser,
-  registerRequest,
   type UserPublic,
 } from '../services/authService'
 import { TOKEN_STORAGE_KEY } from '../services/api'
@@ -29,13 +28,6 @@ interface AuthContextValue {
   isAuthenticated: boolean
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (payload: {
-    email: string
-    password: string
-    full_name: string
-    role: 'doctor' | 'nurse'
-    department?: string
-  }) => Promise<void>
   logout: () => Promise<void>
   hasRole: (...roles: UserRole[]) => boolean
 }
@@ -83,22 +75,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     toast.success(`Welcome, ${result.user.full_name}`)
   }, [])
 
-  const register = useCallback(
-    async (payload: {
-      email: string
-      password: string
-      full_name: string
-      role: 'doctor' | 'nurse'
-      department?: string
-    }) => {
-      const result = await registerRequest(payload)
-      persistSession(result.token.access_token, result.user)
-      setUser(result.user)
-      toast.success(`Account created. Welcome, ${result.user.full_name}`)
-    },
-    [],
-  )
-
   const logout = useCallback(async () => {
     try {
       await logoutRequest()
@@ -120,11 +96,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: Boolean(user),
       isLoading,
       login,
-      register,
       logout,
       hasRole,
     }),
-    [user, isLoading, login, register, logout, hasRole],
+    [user, isLoading, login, logout, hasRole],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

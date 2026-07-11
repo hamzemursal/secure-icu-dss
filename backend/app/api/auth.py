@@ -1,29 +1,23 @@
-"""Authentication routes — register, login, logout, current profile."""
+"""Authentication routes — login, logout, profile, admin user provisioning."""
 
 from fastapi import APIRouter, status
 
-from app.api.deps import CurrentUser
+from app.api.deps import AdminUser, CurrentUser
 from app.schemas.auth import (
+    CreateUserRequest,
     LoginRequest,
     LoginResponse,
     MessageResponse,
-    RegisterRequest,
     UserPublic,
 )
-from app.services.auth_service import authenticate_user, register_user, user_to_public
+from app.services.auth_service import (
+    authenticate_user,
+    create_user_by_admin,
+    list_users,
+    user_to_public,
+)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
-
-
-@router.post(
-    "/register",
-    response_model=LoginResponse,
-    status_code=status.HTTP_201_CREATED,
-    summary="Create staff account",
-)
-async def register(body: RegisterRequest) -> LoginResponse:
-    """Public registration for doctor or nurse roles (not admin)."""
-    return await register_user(body)
 
 
 @router.post(
@@ -33,7 +27,7 @@ async def register(body: RegisterRequest) -> LoginResponse:
     summary="Staff login",
 )
 async def login(body: LoginRequest) -> LoginResponse:
-    """Authenticate with email/password and receive a JWT."""
+    """Authenticate with email/password issued by an administrator."""
     return await authenticate_user(body.email.lower(), body.password)
 
 
@@ -58,3 +52,27 @@ async def logout(_current_user: CurrentUser) -> MessageResponse:
 async def me(current_user: CurrentUser) -> UserPublic:
     """Return the authenticated user's public profile."""
     return user_to_public(current_user)
+
+
+@router.get(
+    "/users",
+    response_model=list[UserPublic],
+    summary="List staff accounts (admin)",
+)
+async def get_users(_admin: AdminUser) -> list[UserPublic]:
+    """List all provisioned staff — admin only."""
+    return await list_users()
+
+
+@router.post(
+    "/users",
+    response_model=UserPublic,
+    status_code=status.HTTP_201_CREATED,
+    summary="Create staff account (admin)",
+)
+async def create_user(body: CreateUserRequest, _admin: AdminUser) -> UserPublic:
+    """
+    Provision a new staff account with an email chosen by the admin.
+    Public self-registration is disabled.
+    """
+    return await create_user_by_admin(body)

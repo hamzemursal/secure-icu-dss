@@ -15,8 +15,8 @@ class LoginRequest(BaseModel):
     password: str = Field(..., min_length=8, max_length=128)
 
 
-class RegisterRequest(BaseModel):
-    """Public staff registration (doctor or nurse only)."""
+class CreateUserRequest(BaseModel):
+    """Admin-provisioned staff account (email issued by admin only)."""
 
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=128)
